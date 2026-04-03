@@ -18,6 +18,8 @@
       --given-bg: #0f1f40;
       --given-text: #7eb8f7;
       --user-text: #6ee79a;
+      --hint-text: #fbbf24;
+      --annot-text: #fcd34d;
       --highlight: #151528;
       --selected: #1e2d5e;
       --err-bg: #3d1010;
@@ -38,9 +40,18 @@
       gap: 10px;
     }
 
-    /* ── Header ── */
-    h1 {
-      font-size: clamp(1.4rem, 6vw, 2rem);
+    /* ── Top bar ── */
+    .topbar {
+      width: 100%;
+      max-width: 430px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .title-block h1 {
+      font-size: clamp(1.3rem, 6vw, 1.8rem);
       font-weight: 900;
       background: linear-gradient(135deg, var(--accent), var(--accent2));
       -webkit-background-clip: text;
@@ -48,56 +59,28 @@
       background-clip: text;
       line-height: 1;
     }
-    .subtitle { font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
+    .title-block p {
+      font-size: 0.65rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
 
-    /* ── Controls ── */
-    .controls {
-      width: 100%;
-      max-width: 430px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
+    .top-btns { display: flex; gap: 6px; align-items: center; }
+
+    .icon-btn {
+      padding: 7px 12px;
       background: var(--card);
-      border-radius: 12px;
-      padding: 10px 12px;
-    }
-
-    .ctrl-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .ctrl-label {
-      font-size: 0.72rem;
-      color: var(--muted);
-      min-width: 68px;
-    }
-
-    .pill-group { display: flex; gap: 5px; flex-wrap: wrap; }
-
-    .pill {
-      padding: 5px 12px;
-      background: var(--surface);
       border: 1px solid var(--border);
-      color: var(--muted);
-      border-radius: 100px;
+      color: var(--text);
+      border-radius: 8px;
+      font-size: 0.8rem;
       cursor: pointer;
-      font-size: 0.75rem;
-      user-select: none;
-      transition: background 0.15s, color 0.15s, border-color 0.15s;
+      white-space: nowrap;
       -webkit-tap-highlight-color: transparent;
     }
-    .pill.on {
-      background: #1c1c55;
-      border-color: var(--accent);
-      color: var(--text);
-    }
 
-    .new-btn {
-      margin-left: auto;
-      padding: 6px 16px;
+    .new-game-btn {
+      padding: 7px 14px;
       background: linear-gradient(135deg, var(--accent), var(--accent2));
       color: #fff;
       border: none;
@@ -110,10 +93,7 @@
     }
 
     /* ── Grid ── */
-    .grid-wrap {
-      width: 100%;
-      max-width: 430px;
-    }
+    .grid-wrap { width: 100%; max-width: 430px; }
 
     .grid {
       width: 100%;
@@ -134,149 +114,163 @@
       overflow: hidden;
       -webkit-tap-highlight-color: transparent;
       transition: background 0.08s;
+      position: relative;
     }
-
     .cell.br { border-right: 2px solid var(--box-line); }
     .cell.bb { border-bottom: 2px solid var(--box-line); }
 
-    .cell.given { background: var(--given-bg); }
-    .cell.editable { background: var(--surface); cursor: pointer; }
-    .cell.hl { background: var(--highlight); }
-    .cell.hl.given { background: #112035; }
-    .cell.sel { background: var(--selected) !important; }
+    .cell.given   { background: var(--given-bg); cursor: pointer; }
+    .cell.editable{ background: var(--surface);  cursor: pointer; }
+    .cell.hl      { background: var(--highlight); }
+    .cell.hl.given{ background: #112035; }
+    .cell.sel     { background: var(--selected) !important; }
+
+    /* hint pulse */
+    @keyframes hint-pulse {
+      0%,100% { box-shadow: inset 0 0 0 2px #fbbf24; }
+      50%      { box-shadow: inset 0 0 0 2px #f59e0b, 0 0 10px #fbbf2466; }
+    }
+    .cell.hint-cell { animation: hint-pulse 1.2s ease infinite; }
+
+    /* flash error */
+    @keyframes flash-err {
+      0%,100% { background: var(--err-bg) !important; }
+      50%      { background: #7f1d1d !important; }
+    }
+    .cell.flash-err { animation: flash-err 0.5s ease 2 !important; }
 
     .cell-inner {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 100%;
-      height: 100%;
+      display: flex; align-items: center; justify-content: center;
+      width: 100%; height: 100%;
       font-size: clamp(5px, 2vw, 11px);
-      line-height: 1.15;
-      text-align: center;
-      padding: 2px;
+      line-height: 1.15; text-align: center; padding: 2px;
       color: var(--given-text);
-      pointer-events: none;
-      word-break: break-all;
+      pointer-events: none; word-break: break-all;
     }
-
     .cell.editable .cell-inner {
       font-size: clamp(11px, 3.8vw, 22px);
       font-weight: 700;
       color: var(--user-text);
     }
+    .cell.hint-filled .cell-inner { color: var(--hint-text) !important; }
+    .cell.annotated   .cell-inner {
+      font-size: clamp(11px, 3.8vw, 20px);
+      font-weight: 700;
+      color: var(--annot-text);
+    }
 
     /* ── Numpad ── */
     .numpad {
-      display: grid;
-      grid-template-columns: repeat(9, 1fr);
-      gap: 5px;
-      width: 100%;
-      max-width: 430px;
+      display: grid; grid-template-columns: repeat(9, 1fr);
+      gap: 5px; width: 100%; max-width: 430px;
     }
-
     .num-btn {
-      aspect-ratio: 1;
-      background: var(--card);
-      border: 1px solid var(--border);
-      color: var(--text);
-      border-radius: 8px;
-      font-size: clamp(14px, 4.5vw, 22px);
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      -webkit-tap-highlight-color: transparent;
-      transition: background 0.1s;
+      aspect-ratio: 1; background: var(--card);
+      border: 1px solid var(--border); color: var(--text);
+      border-radius: 8px; font-size: clamp(14px, 4.5vw, 22px); font-weight: 700;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      -webkit-tap-highlight-color: transparent; transition: background 0.1s;
     }
     .num-btn:active { background: var(--selected); }
 
-    /* ── Action buttons ── */
-    .actions {
-      display: flex;
-      gap: 8px;
-      width: 100%;
-      max-width: 430px;
-    }
-
+    /* ── Bottom actions ── */
+    .bottom-actions { display: flex; gap: 8px; width: 100%; max-width: 430px; }
     .act-btn {
-      flex: 1;
-      padding: 11px;
-      border: none;
-      border-radius: 9px;
-      font-size: 0.88rem;
-      font-weight: 700;
-      cursor: pointer;
+      flex: 1; padding: 11px; border: none; border-radius: 9px;
+      font-size: 0.88rem; font-weight: 700; cursor: pointer;
       -webkit-tap-highlight-color: transparent;
     }
-
-    .erase-btn {
-      background: var(--card);
-      color: var(--text);
-      border: 1px solid var(--border);
-    }
-
-    .check-btn {
-      background: linear-gradient(135deg, #10b981, #34d399);
-      color: #000;
-    }
+    .erase-btn { background: var(--card); color: var(--text); border: 1px solid var(--border); }
+    .check-btn { background: linear-gradient(135deg, #10b981, #34d399); color: #000; }
 
     /* ── Message ── */
     .msg {
-      width: 100%;
-      max-width: 430px;
-      padding: 10px 14px;
-      border-radius: 9px;
-      font-weight: 600;
-      text-align: center;
-      font-size: 0.88rem;
-      opacity: 0;
-      transform: translateY(-6px);
-      transition: opacity 0.25s, transform 0.25s;
-      pointer-events: none;
+      width: 100%; max-width: 430px; padding: 10px 14px; border-radius: 9px;
+      font-weight: 600; text-align: center; font-size: 0.88rem;
+      opacity: 0; transform: translateY(-6px);
+      transition: opacity 0.25s, transform 0.25s; pointer-events: none;
     }
-    .msg.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
-    .msg.success { background: #0e3520; color: #4ade80; border: 1px solid #1a5e35; }
-    .msg.error   { background: var(--err-bg); color: var(--err-text); border: 1px solid #6b2020; }
+    .msg.show   { opacity: 1; transform: translateY(0); pointer-events: auto; }
+    .msg.success{ background: #0e3520; color: #4ade80; border: 1px solid #1a5e35; }
+    .msg.error  { background: var(--err-bg); color: var(--err-text); border: 1px solid #6b2020; }
+    .msg.hint   { background: #2a2000; color: var(--hint-text); border: 1px solid #5a4000; }
 
     /* ── Legend ── */
-    .legend {
-      font-size: 0.68rem;
-      color: var(--muted);
-      text-align: center;
-      max-width: 430px;
-      line-height: 1.6;
+    .legend { font-size: 0.65rem; color: var(--muted); text-align: center; max-width: 430px; line-height: 1.6; }
+
+    /* ── Modal ── */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.75); z-index: 100;
+      align-items: center; justify-content: center;
+      padding: 16px;
+    }
+    .modal-overlay.open { display: flex; }
+
+    .modal {
+      background: var(--card); border-radius: 16px; padding: 20px;
+      width: min(92vw, 380px); display: flex; flex-direction: column; gap: 16px;
+      border: 1px solid var(--border);
+    }
+    .modal h2 { font-size: 1.1rem; font-weight: 800; text-align: center; }
+
+    .modal-row { display: flex; flex-direction: column; gap: 6px; }
+    .modal-label { font-size: 0.72rem; color: var(--muted); }
+
+    .pill-group { display: flex; gap: 6px; flex-wrap: wrap; }
+    .pill {
+      padding: 6px 14px; background: var(--surface);
+      border: 1px solid var(--border); color: var(--muted);
+      border-radius: 100px; cursor: pointer; font-size: 0.78rem;
+      user-select: none; transition: background 0.15s, color 0.15s, border-color 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .pill.on { background: #1c1c55; border-color: var(--accent); color: var(--text); }
+
+    .modal-actions { display: flex; gap: 8px; }
+    .start-btn {
+      flex: 1; padding: 11px; background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff; border: none; border-radius: 9px; font-size: 0.9rem; font-weight: 700; cursor: pointer;
+    }
+    .cancel-btn {
+      padding: 11px 16px; background: var(--surface);
+      border: 1px solid var(--border); color: var(--muted);
+      border-radius: 9px; font-size: 0.9rem; cursor: pointer;
+    }
+
+    /* ── Print ── */
+    .print-title { display: none; }
+
+    @media print {
+      body { background: white !important; color: black !important; padding: 4mm; gap: 4mm; }
+      .topbar, .numpad, .bottom-actions, .msg, .legend, .modal-overlay { display: none !important; }
+      .print-title { display: block; text-align: center; font-size: 18pt; font-weight: 900; margin-bottom: 4mm; color: black !important; }
+      .grid-wrap { max-width: 100%; }
+      .grid { width: min(90vw, 140mm) !important; border: 3px solid black !important; border-radius: 0 !important; }
+      .cell { border-color: #aaa !important; }
+      .cell.br { border-right: 2.5px solid black !important; }
+      .cell.bb { border-bottom: 2.5px solid black !important; }
+      .cell.given    { background: #efefef !important; }
+      .cell.editable { background: white !important; }
+      .cell-inner { color: black !important; font-size: clamp(5px, 2vw, 11px) !important; }
+      .cell.editable .cell-inner { font-size: clamp(11px, 3.8vw, 22px) !important; font-weight: 700 !important; }
+      .cell.annotated .cell-inner { font-size: clamp(11px, 3.8vw, 20px) !important; font-weight: 700 !important; }
     }
   </style>
 </head>
 <body>
 
-<div style="text-align:center">
-  <h1>MathDoku</h1>
-  <p class="subtitle">Sudoku — but every clue is a math expression</p>
-</div>
+<p class="print-title">MathDoku</p>
 
-<div class="controls">
-  <div class="ctrl-row">
-    <span class="ctrl-label">Difficulty</span>
-    <div class="pill-group" id="diffGroup">
-      <span class="pill on" data-diff="easy">Easy</span>
-      <span class="pill" data-diff="medium">Medium</span>
-      <span class="pill" data-diff="hard">Hard</span>
-    </div>
-    <button class="new-btn" id="newBtn">▶ New Game</button>
+<div class="topbar">
+  <div class="title-block">
+    <h1>MathDoku</h1>
+    <p>Sudoku with math expressions</p>
   </div>
-  <div class="ctrl-row">
-    <span class="ctrl-label">Expressions</span>
-    <div class="pill-group" id="typeGroup">
-      <span class="pill on" data-type="roots">√ Roots</span>
-      <span class="pill on" data-type="powers">xⁿ Powers</span>
-      <span class="pill" data-type="factorials">n! Factorials</span>
-      <span class="pill" data-type="division">÷ Division</span>
-      <span class="pill" data-type="multiplication">× Multiply</span>
-      <span class="pill on" data-type="standard">123 Standard</span>
-    </div>
+  <div class="top-btns">
+    <button class="icon-btn" id="hintBtn">💡 Hint</button>
+    <button class="icon-btn" id="printBtn">🖨</button>
+    <button class="new-game-btn" id="newGameBtn">▶ New Game</button>
   </div>
 </div>
 
@@ -286,7 +280,7 @@
 
 <div class="numpad" id="numpad"></div>
 
-<div class="actions">
+<div class="bottom-actions">
   <button class="act-btn erase-btn" id="eraseBtn">⌫ Erase</button>
   <button class="act-btn check-btn" id="checkBtn">✓ Check</button>
 </div>
@@ -294,37 +288,64 @@
 <div class="msg" id="msg"></div>
 
 <p class="legend">
-  √ = square root &nbsp;·&nbsp; ∛ = cube root &nbsp;·&nbsp; ∜ = 4th root<br>
-  xⁿ = exponent &nbsp;·&nbsp; n! = factorial &nbsp;·&nbsp; ÷ = divide &nbsp;·&nbsp; × = multiply
+  √ sq.root · ∛ cube root · ∜ 4th root · xⁿ exponent · n! factorial · ÷ divide · × multiply<br>
+  <span style="color:#fcd34d">Tap a clue cell</span> to decode it — type what you think the expression equals.
 </p>
+
+<!-- New Game Modal -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <h2>New Game</h2>
+    <div class="modal-row">
+      <span class="modal-label">Difficulty</span>
+      <div class="pill-group" id="diffGroup">
+        <span class="pill on" data-diff="easy">Easy</span>
+        <span class="pill" data-diff="medium">Medium</span>
+        <span class="pill" data-diff="hard">Hard</span>
+      </div>
+    </div>
+    <div class="modal-row">
+      <span class="modal-label">Expression types (mix and match)</span>
+      <div class="pill-group" id="typeGroup">
+        <span class="pill on"  data-type="roots">√ Roots</span>
+        <span class="pill on"  data-type="powers">xⁿ Powers</span>
+        <span class="pill"     data-type="factorials">n! Factorials</span>
+        <span class="pill"     data-type="division">÷ Division</span>
+        <span class="pill"     data-type="multiplication">× Multiply</span>
+        <span class="pill on"  data-type="standard">123 Standard</span>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="cancel-btn" id="cancelBtn">Cancel</button>
+      <button class="start-btn"  id="startBtn">▶ Start</button>
+    </div>
+  </div>
+</div>
 
 <script>
 (function () {
 
-  // ── Expression pools ─────────────────────────────────────────────────────
-  // Each entry: { expr: string, type: string }
-  // "plain" is always a fallback and never shown directly as a "type" option.
-
+  // ── Expression pools ────────────────────────────────────────────────────
   const POOL = {
     roots: {
-      1: ['√1', '∛1', '∜1'],
-      2: ['√4', '∛8'],
-      3: ['√9', '∛27'],
-      4: ['√16', '∛64', '∜256'],
-      5: ['√25', '∛125'],
-      6: ['√36', '∛216'],
-      7: ['√49', '∛343'],
-      8: ['√64', '∛512', '∜4096'],
-      9: ['√81', '∛729'],
+      1: ['√1','∛1','∜1'],
+      2: ['√4','∛8'],
+      3: ['√9','∛27'],
+      4: ['√16','∛64','∜256'],
+      5: ['√25','∛125'],
+      6: ['√36','∛216'],
+      7: ['√49','∛343'],
+      8: ['√64','∛512','∜4096'],
+      9: ['√81','∛729'],
     },
     powers: {
-      1: ['1²', '1³', '1⁷'],
+      1: ['1²','1³','1⁷'],
       4: ['2²'],
       8: ['2³'],
       9: ['3²'],
     },
     factorials: {
-      1: ['0!', '1!'],
+      1: ['0!','1!'],
       2: ['2!'],
       3: ['3!÷2'],
       4: ['4!÷3!'],
@@ -335,68 +356,65 @@
       9: ['9!÷8!'],
     },
     division: {
-      1: ['9÷9', '7÷7', '6÷6', '5÷5', '8÷8'],
-      2: ['8÷4', '6÷3', '4÷2', '18÷9'],
-      3: ['9÷3', '6÷2', '15÷5', '12÷4'],
-      4: ['8÷2', '12÷3', '16÷4', '20÷5'],
-      5: ['15÷3', '25÷5', '10÷2', '45÷9', '35÷7'],
-      6: ['12÷2', '18÷3', '24÷4', '30÷5', '42÷7'],
-      7: ['14÷2', '21÷3', '35÷5', '49÷7', '63÷9'],
-      8: ['16÷2', '24÷3', '32÷4', '40÷5', '56÷7'],
-      9: ['18÷2', '27÷3', '36÷4', '45÷5', '63÷7'],
+      1: ['9÷9','7÷7','6÷6','5÷5','8÷8'],
+      2: ['8÷4','6÷3','4÷2','18÷9'],
+      3: ['9÷3','6÷2','15÷5','12÷4'],
+      4: ['8÷2','12÷3','16÷4','20÷5'],
+      5: ['15÷3','25÷5','10÷2','45÷9','35÷7'],
+      6: ['12÷2','18÷3','24÷4','30÷5','42÷7'],
+      7: ['14÷2','21÷3','35÷5','49÷7','63÷9'],
+      8: ['16÷2','24÷3','32÷4','40÷5','56÷7'],
+      9: ['18÷2','27÷3','36÷4','45÷5','63÷7'],
     },
     multiplication: {
-      1: ['1×1', '1×1×1'],
-      2: ['2×1', '1×2'],
-      3: ['3×1', '1×3'],
-      4: ['2×2', '4×1', '1×4'],
-      5: ['5×1', '1×5'],
-      6: ['2×3', '3×2', '6×1'],
-      7: ['7×1', '1×7'],
-      8: ['2×4', '4×2', '8×1'],
-      9: ['3×3', '9×1', '1×9'],
+      1: ['1×1'],
+      2: ['2×1','1×2'],
+      3: ['3×1','1×3'],
+      4: ['2×2','4×1'],
+      5: ['5×1','1×5'],
+      6: ['2×3','3×2','6×1'],
+      7: ['7×1','1×7'],
+      8: ['2×4','4×2','8×1'],
+      9: ['3×3','9×1'],
     },
     standard: {
-      1: ['1'], 2: ['2'], 3: ['3'], 4: ['4'], 5: ['5'],
-      6: ['6'], 7: ['7'], 8: ['8'], 9: ['9'],
+      1:['1'],2:['2'],3:['3'],4:['4'],5:['5'],6:['6'],7:['7'],8:['8'],9:['9'],
     },
   };
 
-  // Extra compound expressions (shown when multiple types are enabled)
-  // keyed by required types (comma-sorted), then value
   const COMPOUND = {
     'division,roots': {
-      2: ['√16÷2'],          // 4÷2
-      3: ['∛729÷3', '√36÷2'],// 9÷3, 6÷2
-      4: ['√64÷2'],           // 8÷2
-      5: ['√100÷2'],          // 10÷2
-      6: ['√144÷2'],          // 12÷2
-      7: ['√196÷2'],          // 14÷2
-      8: ['√256÷2'],          // 16÷2
-      9: ['√324÷2'],          // 18÷2
-    },
-    'factorials,roots': {
-      2: ['√(2!)'],            // √2 — not integer… skip, actually 2!=2, √2 ≠ integer
-      6: ['√(3!)²'],           // √36 = 6 — messy
-      // keep this sparse; only truly clean ones
+      2: ['√16÷2'],
+      3: ['∛729÷3','√36÷2'],
+      4: ['√64÷2'],
+      5: ['√100÷2'],
+      6: ['√144÷2'],
+      7: ['√196÷2'],
+      8: ['√256÷2'],
+      9: ['√324÷2'],
     },
     'division,factorials': {
-      3: ['3!÷2!'],           // 6÷2
-      4: ['4!÷(3!)'],         // 24÷6
-      8: ['(4!)÷3'],          // 24÷3
+      3: ['3!÷2!'],
+      4: ['4!÷(3!)'],
+      8: ['(4!)÷3'],
     },
   };
 
-  // ── Game state ───────────────────────────────────────────────────────────
-  let solution = [];
-  let puzzle   = [];
-  let userGrid = [];
-  let exprs    = [];   // pre-generated expression strings for given cells
-  let selected = null; // [row, col] or null
-  let difficulty = 'easy';
-  let enabledTypes = new Set(['roots', 'powers', 'standard']);
+  // ── State ───────────────────────────────────────────────────────────────
+  let solution    = [];
+  let puzzle      = [];
+  let userGrid    = [];   // numbers filled by user into empty cells
+  let annotations = [];   // user's decoded numbers for given (expression) cells
+  let exprs       = [];   // pre-picked expression strings for given cells
+  let hintFilled  = new Set();  // "r,c" for hint-auto-filled cells
+  let flashErr    = new Set();  // "r,c" for flash-red cells
+  let selected    = null; // [r, c] — either given or empty
+  let hintCell    = null; // [r, c] currently highlighted as hint
+  let hintLevel   = 0;    // 0=off 1=cell highlighted 2=answered
+  let difficulty  = 'easy';
+  let enabledTypes = new Set(['roots','powers','standard']);
 
-  // ── Sudoku helpers ───────────────────────────────────────────────────────
+  // ── Sudoku ──────────────────────────────────────────────────────────────
   function shuffle(a) {
     for (let i = a.length - 1; i > 0; i--) {
       const j = (Math.random() * (i + 1)) | 0;
@@ -409,18 +427,18 @@
     for (let i = 0; i < 9; i++) {
       if (g[r][i] === n || g[i][c] === n) return false;
     }
-    const br = Math.floor(r / 3) * 3, bc = Math.floor(c / 3) * 3;
+    const br = Math.floor(r/3)*3, bc = Math.floor(c/3)*3;
     for (let i = 0; i < 3; i++)
       for (let j = 0; j < 3; j++)
-        if (g[br + i][bc + j] === n) return false;
+        if (g[br+i][bc+j] === n) return false;
     return true;
   }
 
   function fillGrid(g) {
-    for (let r = 0; r < 9; r++) {
-      for (let c = 0; c < 9; c++) {
+    for (let r = 0; r < 9; r++)
+      for (let c = 0; c < 9; c++)
         if (g[r][c] === 0) {
-          for (const n of shuffle([1, 2, 3, 4, 5, 6, 7, 8, 9])) {
+          for (const n of shuffle([1,2,3,4,5,6,7,8,9])) {
             if (valid(g, r, c, n)) {
               g[r][c] = n;
               if (fillGrid(g)) return true;
@@ -429,80 +447,137 @@
           }
           return false;
         }
-      }
-    }
     return true;
   }
 
   function makePuzzle(sol) {
-    const counts = { easy: 36, medium: 46, hard: 54 };
-    const p = sol.map(row => [...row]);
-    const cells = shuffle(Array.from({ length: 81 }, (_, i) => i));
+    const counts = {easy:36, medium:46, hard:54};
+    const p = sol.map(r => [...r]);
+    const cells = shuffle(Array.from({length:81},(_,i)=>i));
     let n = counts[difficulty];
     for (const idx of cells) {
       if (n-- <= 0) break;
-      p[(idx / 9) | 0][idx % 9] = 0;
+      p[(idx/9)|0][idx%9] = 0;
     }
     return p;
   }
 
-  // ── Expression picking ───────────────────────────────────────────────────
+  // ── Expression picking ──────────────────────────────────────────────────
   function pickExpr(val) {
-    const candidates = [];
-
-    // Gather from enabled single-type pools
-    for (const t of enabledTypes) {
-      if (POOL[t]?.[val]) candidates.push(...POOL[t][val]);
+    const c = [];
+    for (const t of enabledTypes)
+      if (POOL[t]?.[val]) c.push(...POOL[t][val]);
+    for (const [key, map] of Object.entries(COMPOUND)) {
+      const req = key.split(',');
+      if (req.every(t => enabledTypes.has(t)) && map[val]) c.push(...map[val]);
     }
-
-    // Gather compound expressions if both required types are enabled
-    for (const [key, valMap] of Object.entries(COMPOUND)) {
-      const required = key.split(',');
-      if (required.every(t => enabledTypes.has(t)) && valMap[val]) {
-        candidates.push(...valMap[val]);
-      }
-    }
-
-    if (candidates.length === 0) return String(val); // plain fallback
-    return candidates[(Math.random() * candidates.length) | 0];
+    if (!c.length) return String(val);
+    return c[(Math.random() * c.length)|0];
   }
 
-  // ── Rendering ────────────────────────────────────────────────────────────
+  // ── Hint logic ──────────────────────────────────────────────────────────
+  function getPossible(r, c) {
+    const used = new Set();
+    for (let i = 0; i < 9; i++) {
+      const rv = puzzle[r][i] || userGrid[r][i];
+      const cv = puzzle[i][c] || userGrid[i][c];
+      if (rv) used.add(rv);
+      if (cv) used.add(cv);
+    }
+    const br = Math.floor(r/3)*3, bc = Math.floor(c/3)*3;
+    for (let i = 0; i < 3; i++)
+      for (let j = 0; j < 3; j++) {
+        const v = puzzle[br+i][bc+j] || userGrid[br+i][bc+j];
+        if (v) used.add(v);
+      }
+    return [1,2,3,4,5,6,7,8,9].filter(n => !used.has(n));
+  }
+
+  function findEasiestCell() {
+    let best = null, bestCount = 10;
+    for (let r = 0; r < 9; r++)
+      for (let c = 0; c < 9; c++)
+        if (puzzle[r][c] === 0 && userGrid[r][c] === 0) {
+          const p = getPossible(r, c).length;
+          if (p < bestCount) { bestCount = p; best = [r, c]; }
+          if (bestCount === 1) return best;
+        }
+    return best;
+  }
+
+  function hint() {
+    if (hintLevel === 0) {
+      // Level 1: highlight the most constrained empty cell
+      const cell = findEasiestCell();
+      if (!cell) { showMsg('No empty cells left!', 'hint'); return; }
+      hintCell = cell;
+      hintLevel = 1;
+      const possible = getPossible(cell[0], cell[1]);
+      showMsg(
+        possible.length === 1
+          ? `This cell can only be one value — think about it!`
+          : `This cell has ${possible.length} possible values. Work through the row, column & box.`,
+        'hint'
+      );
+    } else if (hintLevel === 1) {
+      // Level 2: reveal the answer
+      const [r, c] = hintCell;
+      userGrid[r][c] = solution[r][c];
+      hintFilled.add(`${r},${c}`);
+      showMsg(`Filled in with the answer (shown in gold).`, 'hint');
+      hintCell = null;
+      hintLevel = 0;
+    }
+    render();
+  }
+
+  // ── Render ──────────────────────────────────────────────────────────────
   function render() {
     const gridEl = document.getElementById('grid');
     gridEl.innerHTML = '';
-
     const [sr, sc] = selected ?? [-1, -1];
 
     for (let r = 0; r < 9; r++) {
       for (let c = 0; c < 9; c++) {
         const cell = document.createElement('div');
         cell.className = 'cell';
-
         if (c === 2 || c === 5) cell.classList.add('br');
         if (r === 2 || r === 5) cell.classList.add('bb');
 
         const isGiven = puzzle[r][c] !== 0;
+        const key = `${r},${c}`;
+
         cell.classList.add(isGiven ? 'given' : 'editable');
 
-        // Highlight same row / col / box
+        // Row/col/box highlight
         if (sr >= 0) {
-          const sameBox = (r / 3 | 0) === (sr / 3 | 0) && (c / 3 | 0) === (sc / 3 | 0);
+          const sameBox = ((r/3)|0) === ((sr/3)|0) && ((c/3)|0) === ((sc/3)|0);
           if (r === sr || c === sc || sameBox) cell.classList.add('hl');
         }
-
         if (r === sr && c === sc) cell.classList.add('sel');
+
+        // Special states
+        if (hintCell && hintCell[0] === r && hintCell[1] === c) cell.classList.add('hint-cell');
+        if (hintFilled.has(key)) cell.classList.add('hint-filled');
+        if (flashErr.has(key))   cell.classList.add('flash-err');
 
         const inner = document.createElement('div');
         inner.className = 'cell-inner';
+
         if (isGiven) {
-          inner.textContent = exprs[r][c];
-        } else if (userGrid[r][c] !== 0) {
-          inner.textContent = userGrid[r][c];
+          const ann = annotations[r][c];
+          if (ann) {
+            cell.classList.add('annotated');
+            inner.textContent = ann;
+          } else {
+            inner.textContent = exprs[r][c];
+          }
+        } else {
+          const v = userGrid[r][c];
+          if (v) inner.textContent = v;
         }
 
-        if (!isGiven) cell.addEventListener('click', () => selectCell(r, c));
-
+        cell.addEventListener('click', () => selectCell(r, c));
         cell.appendChild(inner);
         gridEl.appendChild(cell);
       }
@@ -510,7 +585,10 @@
   }
 
   function selectCell(r, c) {
-    if (puzzle[r][c] !== 0) return;
+    // Clicking a different cell clears hint highlight (but not hint-filled)
+    if (hintCell && (hintCell[0] !== r || hintCell[1] !== c)) {
+      hintCell = null; hintLevel = 0;
+    }
     selected = [r, c];
     render();
   }
@@ -519,35 +597,72 @@
   function inputNum(n) {
     if (!selected) return;
     const [r, c] = selected;
-    if (puzzle[r][c] !== 0) return;
-    userGrid[r][c] = (userGrid[r][c] === n) ? 0 : n;
+
+    if (puzzle[r][c] !== 0) {
+      // Given cell — annotate
+      annotations[r][c] = (annotations[r][c] === n) ? 0 : n;
+    } else {
+      // Empty cell — solve
+      userGrid[r][c] = (userGrid[r][c] === n) ? 0 : n;
+      // If this was the hinted cell, clear hint
+      if (hintCell && hintCell[0] === r && hintCell[1] === c) {
+        hintCell = null; hintLevel = 0;
+      }
+      hintFilled.delete(`${r},${c}`);
+    }
     render();
   }
 
   function erase() {
     if (!selected) return;
     const [r, c] = selected;
-    if (puzzle[r][c] !== 0) return;
-    userGrid[r][c] = 0;
+    if (puzzle[r][c] !== 0) {
+      annotations[r][c] = 0;
+    } else {
+      userGrid[r][c] = 0;
+      hintFilled.delete(`${r},${c}`);
+    }
     render();
   }
 
   // ── Check ────────────────────────────────────────────────────────────────
   function check() {
-    let empty = 0, errors = 0;
-    for (let r = 0; r < 9; r++)
-      for (let c = 0; c < 9; c++)
-        if (puzzle[r][c] === 0) {
-          if (userGrid[r][c] === 0) empty++;
-          else if (userGrid[r][c] !== solution[r][c]) errors++;
-        }
+    const wrong = [];
+    let empty = 0;
 
-    if (empty > 0)
-      showMsg(`${empty} cell${empty > 1 ? 's' : ''} still empty!`, 'error');
-    else if (errors > 0)
-      showMsg(`${errors} incorrect answer${errors > 1 ? 's' : ''} — keep going!`, 'error');
-    else
+    for (let r = 0; r < 9; r++) {
+      for (let c = 0; c < 9; c++) {
+        if (puzzle[r][c] !== 0) {
+          // Given cell: check annotation if present
+          const ann = annotations[r][c];
+          if (ann && ann !== puzzle[r][c]) wrong.push([r, c]);
+        } else {
+          // Empty cell
+          if (userGrid[r][c] === 0) empty++;
+          else if (userGrid[r][c] !== solution[r][c]) wrong.push([r, c]);
+        }
+      }
+    }
+
+    if (wrong.length === 0 && empty === 0) {
       showMsg('🎉 Solved! Well done!', 'success');
+      return;
+    }
+
+    // Flash wrong cells
+    if (wrong.length > 0) {
+      wrong.forEach(([r, c]) => flashErr.add(`${r},${c}`));
+      render();
+      setTimeout(() => {
+        wrong.forEach(([r, c]) => flashErr.delete(`${r},${c}`));
+        render();
+      }, 1000);
+    }
+
+    if (empty > 0 && wrong.length === 0)
+      showMsg(`${empty} cell${empty>1?'s':''} still empty!`, 'error');
+    else if (wrong.length > 0)
+      showMsg(`${wrong.length} incorrect${empty>0?' (and '+empty+' empty)':''}`, 'error');
   }
 
   function showMsg(text, type) {
@@ -560,24 +675,34 @@
   }
 
   // ── New game ─────────────────────────────────────────────────────────────
-  function newGame() {
-    const sol = Array.from({ length: 9 }, () => Array(9).fill(0));
+  function startGame() {
+    const sol = Array.from({length:9}, () => Array(9).fill(0));
     fillGrid(sol);
-    solution = sol;
-    puzzle   = makePuzzle(sol);
-    userGrid = Array.from({ length: 9 }, () => Array(9).fill(0));
-    exprs    = Array.from({ length: 9 }, (_, r) =>
-      Array.from({ length: 9 }, (_, c) =>
-        puzzle[r][c] !== 0 ? pickExpr(puzzle[r][c]) : null
-      )
+    solution    = sol;
+    puzzle      = makePuzzle(sol);
+    userGrid    = Array.from({length:9}, () => Array(9).fill(0));
+    annotations = Array.from({length:9}, () => Array(9).fill(0));
+    exprs       = Array.from({length:9}, (_,r) =>
+      Array.from({length:9}, (_,c) => puzzle[r][c] !== 0 ? pickExpr(puzzle[r][c]) : null)
     );
-    selected = null;
-    const el = document.getElementById('msg');
-    el.className = 'msg';
+    hintFilled.clear();
+    flashErr.clear();
+    selected  = null;
+    hintCell  = null;
+    hintLevel = 0;
+    document.getElementById('msg').className = 'msg';
     render();
   }
 
-  // ── Build numpad ─────────────────────────────────────────────────────────
+  // ── Modal ─────────────────────────────────────────────────────────────────
+  function openModal() {
+    document.getElementById('modalOverlay').classList.add('open');
+  }
+  function closeModal() {
+    document.getElementById('modalOverlay').classList.remove('open');
+  }
+
+  // ── Build numpad ──────────────────────────────────────────────────────────
   const numpad = document.getElementById('numpad');
   for (let i = 1; i <= 9; i++) {
     const b = document.createElement('button');
@@ -587,7 +712,25 @@
     numpad.appendChild(b);
   }
 
-  // ── Pill toggles ─────────────────────────────────────────────────────────
+  // ── Event listeners ───────────────────────────────────────────────────────
+  document.getElementById('newGameBtn').addEventListener('click', openModal);
+  document.getElementById('cancelBtn').addEventListener('click', closeModal);
+  document.getElementById('eraseBtn').addEventListener('click', erase);
+  document.getElementById('checkBtn').addEventListener('click', check);
+  document.getElementById('hintBtn').addEventListener('click', hint);
+  document.getElementById('printBtn').addEventListener('click', () => window.print());
+
+  document.getElementById('startBtn').addEventListener('click', () => {
+    closeModal();
+    startGame();
+  });
+
+  // Close modal on overlay click
+  document.getElementById('modalOverlay').addEventListener('click', e => {
+    if (e.target === document.getElementById('modalOverlay')) closeModal();
+  });
+
+  // Difficulty pills
   document.querySelectorAll('#diffGroup .pill').forEach(p => {
     p.addEventListener('click', () => {
       document.querySelectorAll('#diffGroup .pill').forEach(x => x.classList.remove('on'));
@@ -596,6 +739,7 @@
     });
   });
 
+  // Expression type pills
   document.querySelectorAll('#typeGroup .pill').forEach(p => {
     p.addEventListener('click', () => {
       p.classList.toggle('on');
@@ -604,29 +748,23 @@
     });
   });
 
-  document.getElementById('newBtn').addEventListener('click', newGame);
-  document.getElementById('eraseBtn').addEventListener('click', erase);
-  document.getElementById('checkBtn').addEventListener('click', check);
-
-  // ── Keyboard ─────────────────────────────────────────────────────────────
+  // Keyboard
   document.addEventListener('keydown', e => {
     if (e.key >= '1' && e.key <= '9') { inputNum(+e.key); return; }
     if (e.key === 'Backspace' || e.key === 'Delete' || e.key === '0') { erase(); return; }
-
     if (!selected) return;
     const [r, c] = selected;
-    const dirs = { ArrowUp: [-1, 0], ArrowDown: [1, 0], ArrowLeft: [0, -1], ArrowRight: [0, 1] };
+    const dirs = {ArrowUp:[-1,0], ArrowDown:[1,0], ArrowLeft:[0,-1], ArrowRight:[0,1]};
     if (dirs[e.key]) {
       e.preventDefault();
       const [dr, dc] = dirs[e.key];
-      const nr = r + dr, nc = c + dc;
-      if (nr >= 0 && nr < 9 && nc >= 0 && nc < 9 && puzzle[nr][nc] === 0)
-        selectCell(nr, nc);
+      const nr = r+dr, nc = c+dc;
+      if (nr >= 0 && nr < 9 && nc >= 0 && nc < 9) selectCell(nr, nc);
     }
   });
 
-  // ── Start ─────────────────────────────────────────────────────────────────
-  newGame();
+  // ── Init ──────────────────────────────────────────────────────────────────
+  startGame();
 
 })();
 </script>
