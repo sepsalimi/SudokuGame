@@ -26,6 +26,43 @@
       --err-text: #f87171;
       --border: #252545;
       --box-line: #5a50e0;
+      --hl-given: #112035;
+      --pill-on-bg: #1c1c55;
+      --msg-success-bg: #0e3520;
+      --msg-success-color: #4ade80;
+      --msg-success-border: #1a5e35;
+      --msg-hint-bg: #2a2000;
+      --msg-hint-border: #5a4000;
+      --modal-overlay-bg: rgba(0,0,0,0.75);
+    }
+
+    html[data-theme="light"] {
+      --bg: #f0f0f8;
+      --surface: #ffffff;
+      --card: #f8f8ff;
+      --accent: #5b52e8;
+      --accent2: #9333ea;
+      --text: #1a1a2e;
+      --muted: #7070a0;
+      --given-bg: #dce8ff;
+      --given-text: #2563eb;
+      --user-text: #16a34a;
+      --hint-text: #d97706;
+      --annot-text: #b45309;
+      --highlight: #e8e8ff;
+      --selected: #c7d7ff;
+      --err-bg: #fee2e2;
+      --err-text: #dc2626;
+      --border: #d0d0e8;
+      --box-line: #5b52e8;
+      --hl-given: #c5d8ef;
+      --pill-on-bg: #ddd8ff;
+      --msg-success-bg: #dcfce7;
+      --msg-success-color: #16a34a;
+      --msg-success-border: #86efac;
+      --msg-hint-bg: #fef9c3;
+      --msg-hint-border: #fde68a;
+      --modal-overlay-bg: rgba(0,0,0,0.45);
     }
 
     body {
@@ -122,7 +159,7 @@
     .cell.given   { background: var(--given-bg); cursor: pointer; }
     .cell.editable{ background: var(--surface);  cursor: pointer; }
     .cell.hl      { background: var(--highlight); }
-    .cell.hl.given{ background: #112035; }
+    .cell.hl.given{ background: var(--hl-given); }
     .cell.sel     { background: var(--selected) !important; }
 
     /* hint pulse */
@@ -191,9 +228,9 @@
       transition: opacity 0.25s, transform 0.25s; pointer-events: none;
     }
     .msg.show   { opacity: 1; transform: translateY(0); pointer-events: auto; }
-    .msg.success{ background: #0e3520; color: #4ade80; border: 1px solid #1a5e35; }
-    .msg.error  { background: var(--err-bg); color: var(--err-text); border: 1px solid #6b2020; }
-    .msg.hint   { background: #2a2000; color: var(--hint-text); border: 1px solid #5a4000; }
+    .msg.success{ background: var(--msg-success-bg); color: var(--msg-success-color); border: 1px solid var(--msg-success-border); }
+    .msg.error  { background: var(--err-bg); color: var(--err-text); border: 1px solid var(--err-text); }
+    .msg.hint   { background: var(--msg-hint-bg); color: var(--hint-text); border: 1px solid var(--msg-hint-border); }
 
     /* ── Legend ── */
     .legend { font-size: 0.65rem; color: var(--muted); text-align: center; max-width: 430px; line-height: 1.6; }
@@ -201,7 +238,7 @@
     /* ── Modal ── */
     .modal-overlay {
       display: none; position: fixed; inset: 0;
-      background: rgba(0,0,0,0.75); z-index: 100;
+      background: var(--modal-overlay-bg); z-index: 100;
       align-items: center; justify-content: center;
       padding: 16px;
     }
@@ -225,7 +262,7 @@
       user-select: none; transition: background 0.15s, color 0.15s, border-color 0.15s;
       -webkit-tap-highlight-color: transparent;
     }
-    .pill.on { background: #1c1c55; border-color: var(--accent); color: var(--text); }
+    .pill.on { background: var(--pill-on-bg); border-color: var(--accent); color: var(--text); }
 
     .modal-actions { display: flex; gap: 8px; }
     .start-btn {
@@ -268,6 +305,7 @@
     <p>Sudoku with math expressions</p>
   </div>
   <div class="top-btns">
+    <button class="icon-btn" id="themeBtn" title="Toggle light/dark mode">🌙</button>
     <button class="icon-btn" id="hintBtn">💡 Hint</button>
     <button class="icon-btn" id="printBtn">🖨</button>
     <button class="new-game-btn" id="newGameBtn">▶ New Game</button>
@@ -764,6 +802,25 @@
       if (nr >= 0 && nr < 9 && nc >= 0 && nc < 9) selectCell(nr, nc);
     }
   });
+
+  // ── Theme toggle ──────────────────────────────────────────────────────────
+  function applyTheme(theme) {
+    if (theme === 'light') {
+      document.documentElement.setAttribute('data-theme', 'light');
+      document.getElementById('themeBtn').textContent = '☀️';
+    } else {
+      document.documentElement.removeAttribute('data-theme');
+      document.getElementById('themeBtn').textContent = '🌙';
+    }
+    localStorage.setItem('mathdoku-theme', theme);
+  }
+
+  document.getElementById('themeBtn').addEventListener('click', () => {
+    const current = document.documentElement.getAttribute('data-theme');
+    applyTheme(current === 'light' ? 'dark' : 'light');
+  });
+
+  applyTheme(localStorage.getItem('mathdoku-theme') || 'dark');
 
   // ── Init ──────────────────────────────────────────────────────────────────
   startGame();
