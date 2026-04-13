@@ -184,7 +184,17 @@
       0%,100% { background: var(--err-bg) !important; }
       50%      { background: #7f1d1d !important; }
     }
+    @keyframes err-pulse {
+      0%,100% { background: var(--err-bg) !important; }
+      50%      { background: #3d1a1a !important; }
+    }
+    @keyframes flash-ok {
+      0%,100% { background: rgba(74,222,128,0.25) !important; }
+      50%      { background: rgba(74,222,128,0.55) !important; }
+    }
     .cell.flash-err { animation: flash-err 0.5s ease 2 !important; }
+    .cell.flash-ok  { animation: flash-ok  0.5s ease 2 !important; }
+    .cell.check-err { animation: err-pulse 2.5s ease-in-out infinite !important; }
 
     .cell-inner {
       display: flex; align-items: center; justify-content: center;
@@ -201,7 +211,6 @@
     }
     .cell.hint-filled .cell-inner { color: var(--hint-text) !important; }
     .cell.check-ok  .cell-inner   { color: #4ade80 !important; }
-    .cell.check-err                { background: var(--err-bg) !important; }
     .cell.check-err .cell-inner   { color: #f87171 !important; }
     html[data-theme="light"] .cell.check-ok  .cell-inner { color: #16a34a !important; }
     html[data-theme="light"] .cell.check-err .cell-inner { color: #dc2626 !important; }
@@ -755,6 +764,7 @@
   let flashErr    = new Set();  // "r,c" for flash-red cells
   let checkOk     = new Set();  // "r,c" for correctly-decoded given cells
   let checkErr    = new Set();  // "r,c" for incorrectly-decoded given cells
+  let flashOk     = new Set();  // "r,c" for green-flash in progress
   let selected    = null; // [r, c] — either given or empty
   let hintCell    = null; // [r, c] currently highlighted as hint
   let hintLevel   = 0;    // 0=off 1=cell highlighted 2=answered
@@ -915,6 +925,7 @@
         if (hintCell && hintCell[0] === r && hintCell[1] === c) cell.classList.add('hint-cell');
         if (hintFilled.has(key)) cell.classList.add('hint-filled');
         if (flashErr.has(key))   cell.classList.add('flash-err');
+        if (flashOk.has(key))    cell.classList.add('flash-ok');
         if (checkOk.has(key))    cell.classList.add('check-ok');
         if (checkErr.has(key))   cell.classList.add('check-err');
 
@@ -1007,7 +1018,7 @@
           // Given cell: check annotation if present
           const ann = annotations[r][c];
           if (ann && ann !== puzzle[r][c]) wrong.push([r, c]);
-          else if (ann && ann === puzzle[r][c]) checkOk.add(`${r},${c}`);
+          else if (ann && ann === puzzle[r][c]) { checkOk.add(`${r},${c}`); flashOk.add(`${r},${c}`); }
         } else {
           // Empty cell: count for solved detection only, don't flag as wrong
           if (userGrid[r][c] === 0 || userGrid[r][c] !== solution[r][c]) empty++;
@@ -1021,15 +1032,13 @@
       return;
     }
 
-    // Flash wrong cells
-    if (wrong.length > 0) {
-      wrong.forEach(([r, c]) => flashErr.add(`${r},${c}`));
+    // Flash correct and wrong cells, then settle into persistent colours
+    render();
+    setTimeout(() => {
+      flashOk.forEach(k => flashOk.delete(k));
+      wrong.forEach(([r, c]) => { flashErr.delete(`${r},${c}`); checkErr.add(`${r},${c}`); });
       render();
-      setTimeout(() => {
-        wrong.forEach(([r, c]) => { flashErr.delete(`${r},${c}`); checkErr.add(`${r},${c}`); });
-        render();
-      }, 1000);
-    }
+    }, 1000);
 
     if (empty > 0 && wrong.length === 0)
       showMsg(`${empty} cell${empty>1?'s':''} still empty!`, 'error');
@@ -1103,6 +1112,7 @@
     );
     hintFilled.clear();
     flashErr.clear();
+    flashOk.clear();
     checkOk.clear();
     checkErr.clear();
     selected  = null;
