@@ -69,12 +69,13 @@
       background: var(--bg);
       color: var(--text);
       font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      min-height: 100vh;
+      height: 100dvh;
+      overflow: hidden;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 10px 10px 20px;
-      gap: 10px;
+      padding: 8px 8px 10px;
+      gap: 8px;
     }
 
     /* ── Top bar ── */
@@ -88,7 +89,7 @@
     }
 
     .title-block h1 {
-      font-size: clamp(1.3rem, 6vw, 1.8rem);
+      font-size: clamp(1.6rem, 7vw, 2.2rem);
       font-weight: 900;
       background: linear-gradient(135deg, var(--accent), var(--accent2));
       -webkit-background-clip: text;
@@ -97,7 +98,7 @@
       line-height: 1;
     }
     .title-block p {
-      font-size: 0.65rem;
+      font-size: 0.8rem;
       color: var(--muted);
       margin-top: 2px;
     }
@@ -110,7 +111,7 @@
       border: 1px solid var(--border);
       color: var(--text);
       border-radius: 8px;
-      font-size: 0.8rem;
+      font-size: 0.95rem;
       cursor: pointer;
       white-space: nowrap;
       -webkit-tap-highlight-color: transparent;
@@ -122,7 +123,7 @@
       color: #fff;
       border: none;
       border-radius: 8px;
-      font-size: 0.82rem;
+      font-size: 0.97rem;
       font-weight: 700;
       cursor: pointer;
       white-space: nowrap;
@@ -130,16 +131,18 @@
     }
 
     /* ── Grid ── */
-    .grid-wrap { width: 100%; max-width: 430px; }
+    .grid-wrap { width: 100%; max-width: min(430px, calc(100dvh - 210px)); }
 
     .grid {
       width: 100%;
       aspect-ratio: 1;
       display: grid;
       grid-template-columns: repeat(9, 1fr);
+      grid-template-rows: repeat(9, 1fr);
       border: 2.5px solid var(--box-line);
-      border-radius: 6px;
+      border-radius: 16px;
       overflow: hidden;
+      box-shadow: 0 8px 48px rgba(108,99,255,0.30), 0 2px 14px rgba(0,0,0,0.5);
     }
 
     .cell {
@@ -160,7 +163,7 @@
     .cell.editable{ background: var(--surface);  cursor: pointer; }
     .cell.hl      { background: var(--highlight); }
     .cell.hl.given{ background: var(--hl-given); }
-    .cell.sel     { background: var(--selected) !important; }
+    .cell.sel     { background: var(--selected) !important; box-shadow: inset 0 0 0 2.5px var(--accent), 0 0 16px rgba(108,99,255,0.5) !important; }
 
     /* hint pulse */
     @keyframes hint-pulse {
@@ -179,19 +182,19 @@
     .cell-inner {
       display: flex; align-items: center; justify-content: center;
       width: 100%; height: 100%;
-      font-size: clamp(5px, 2vw, 11px);
+      font-size: clamp(7px, 2.5vw, 13px);
       line-height: 1.15; text-align: center; padding: 2px;
       color: var(--given-text);
       pointer-events: none; word-break: break-all;
     }
     .cell.editable .cell-inner {
-      font-size: clamp(11px, 3.8vw, 22px);
+      font-size: clamp(14px, 4.8vw, 28px);
       font-weight: 700;
       color: var(--user-text);
     }
     .cell.hint-filled .cell-inner { color: var(--hint-text) !important; }
     .cell.annotated   .cell-inner {
-      font-size: clamp(11px, 3.8vw, 20px);
+      font-size: clamp(14px, 4.8vw, 26px);
       font-weight: 700;
       color: var(--annot-text);
     }
@@ -199,22 +202,33 @@
     /* ── Numpad ── */
     .numpad {
       display: grid; grid-template-columns: repeat(9, 1fr);
-      gap: 5px; width: 100%; max-width: 430px;
+      gap: 5px; width: 100%; max-width: min(430px, calc(100dvh - 210px));
     }
     .num-btn {
-      aspect-ratio: 1; background: var(--card);
+      aspect-ratio: 1;
+      background: linear-gradient(135deg, var(--card) 0%, color-mix(in srgb, var(--card) 72%, var(--accent) 28%) 100%);
       border: 1px solid var(--border); color: var(--text);
-      border-radius: 8px; font-size: clamp(14px, 4.5vw, 22px); font-weight: 700;
+      border-radius: 8px; font-size: clamp(17px, 5.5vw, 27px); font-weight: 700;
       cursor: pointer; display: flex; align-items: center; justify-content: center;
-      -webkit-tap-highlight-color: transparent; transition: background 0.1s;
+      -webkit-tap-highlight-color: transparent;
+      transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
     }
-    .num-btn:active { background: var(--selected); }
+    .num-btn:hover {
+      transform: translateY(-3px) scale(1.07);
+      box-shadow: 0 6px 22px rgba(108,99,255,0.45);
+      background: linear-gradient(135deg, var(--card) 0%, color-mix(in srgb, var(--card) 52%, var(--accent) 48%) 100%);
+    }
+    .num-btn:active {
+      transform: translateY(0) scale(0.95);
+      box-shadow: none;
+      background: var(--selected);
+    }
 
     /* ── Bottom actions ── */
-    .bottom-actions { display: flex; gap: 8px; width: 100%; max-width: 430px; }
+    .bottom-actions { display: flex; gap: 8px; width: 100%; max-width: min(430px, calc(100dvh - 210px)); }
     .act-btn {
       flex: 1; padding: 11px; border: none; border-radius: 9px;
-      font-size: 0.88rem; font-weight: 700; cursor: pointer;
+      font-size: 1.05rem; font-weight: 700; cursor: pointer;
       -webkit-tap-highlight-color: transparent;
     }
     .erase-btn { background: var(--card); color: var(--text); border: 1px solid var(--border); }
@@ -222,8 +236,8 @@
 
     /* ── Message ── */
     .msg {
-      width: 100%; max-width: 430px; padding: 10px 14px; border-radius: 9px;
-      font-weight: 600; text-align: center; font-size: 0.88rem;
+      width: 100%; max-width: min(430px, calc(100dvh - 210px)); padding: 10px 14px; border-radius: 9px;
+      font-weight: 600; text-align: center; font-size: 1.05rem;
       opacity: 0; transform: translateY(-6px);
       transition: opacity 0.25s, transform 0.25s; pointer-events: none;
     }
@@ -233,7 +247,7 @@
     .msg.hint   { background: var(--msg-hint-bg); color: var(--hint-text); border: 1px solid var(--msg-hint-border); }
 
     /* ── Legend ── */
-    .legend { font-size: 0.65rem; color: var(--muted); text-align: center; max-width: 430px; line-height: 1.6; }
+    .legend { font-size: 0.8rem; color: var(--muted); text-align: center; max-width: 430px; line-height: 1.6; }
 
     /* ── Modal ── */
     .modal-overlay {
@@ -275,6 +289,93 @@
       border-radius: 9px; font-size: 0.9rem; cursor: pointer;
     }
 
+    /* ── Theme transition ── */
+    .theme-transitioning * {
+      transition: background-color 0.38s ease, color 0.38s ease, border-color 0.38s ease, box-shadow 0.38s ease !important;
+    }
+
+    /* ── Dot grid pattern ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: radial-gradient(circle, rgba(255,255,255,0.045) 1px, transparent 1px);
+      background-size: 22px 22px;
+      z-index: -1;
+      pointer-events: none;
+    }
+    html[data-theme="light"] body::before {
+      background-image: radial-gradient(circle, rgba(80,80,180,0.07) 1px, transparent 1px);
+    }
+
+    /* ── Aurora orb background ── */
+    .aurora-bg {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      z-index: -2;
+      pointer-events: none;
+    }
+    .aurora-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+    }
+    .aurora-orb-1 {
+      width: 55vmax; height: 55vmax;
+      background: var(--accent);
+      opacity: 0.18;
+      top: -25vmax; left: -15vmax;
+      animation: orbFloat1 16s ease-in-out infinite;
+    }
+    .aurora-orb-2 {
+      width: 45vmax; height: 45vmax;
+      background: var(--accent2);
+      opacity: 0.15;
+      bottom: -20vmax; right: -10vmax;
+      animation: orbFloat2 20s ease-in-out infinite;
+    }
+    .aurora-orb-3 {
+      width: 35vmax; height: 35vmax;
+      background: color-mix(in srgb, var(--accent) 50%, var(--accent2) 50%);
+      opacity: 0.09;
+      top: 40%; left: 40%;
+      animation: orbFloat3 26s ease-in-out infinite;
+    }
+    @keyframes orbFloat1 {
+      0%, 100% { transform: translate(0, 0); }
+      33%       { transform: translate(12vmax, 8vmax); }
+      66%       { transform: translate(-6vmax, 18vmax); }
+    }
+    @keyframes orbFloat2 {
+      0%, 100% { transform: translate(0, 0); }
+      33%       { transform: translate(-10vmax, -8vmax); }
+      66%       { transform: translate(7vmax, -16vmax); }
+    }
+    @keyframes orbFloat3 {
+      0%, 100% { transform: translate(0, 0); }
+      50%       { transform: translate(-9vmax, -7vmax); }
+    }
+
+    /* ── Cell pop-in animation ── */
+    @keyframes cell-pop {
+      0%   { transform: scale(0.35); opacity: 0; }
+      65%  { transform: scale(1.22); }
+      100% { transform: scale(1);   opacity: 1; }
+    }
+    .cell-inner.pop { animation: cell-pop 0.22s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+
+    /* ── Confetti canvas ── */
+    #confetti-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 999;
+      display: none;
+    }
+
     /* ── Print ── */
     .print-title { display: none; }
 
@@ -289,13 +390,20 @@
       .cell.bb { border-bottom: 2.5px solid black !important; }
       .cell.given    { background: #efefef !important; }
       .cell.editable { background: white !important; }
-      .cell-inner { color: black !important; font-size: clamp(5px, 2vw, 11px) !important; }
-      .cell.editable .cell-inner { font-size: clamp(11px, 3.8vw, 22px) !important; font-weight: 700 !important; }
-      .cell.annotated .cell-inner { font-size: clamp(11px, 3.8vw, 20px) !important; font-weight: 700 !important; }
+      .cell-inner { color: black !important; font-size: clamp(7px, 2.5vw, 13px) !important; }
+      .cell.editable .cell-inner { font-size: clamp(14px, 4.8vw, 28px) !important; font-weight: 700 !important; }
+      .cell.annotated .cell-inner { font-size: clamp(14px, 4.8vw, 26px) !important; font-weight: 700 !important; }
     }
   </style>
 </head>
 <body>
+
+<div class="aurora-bg" aria-hidden="true">
+  <div class="aurora-orb aurora-orb-1"></div>
+  <div class="aurora-orb aurora-orb-2"></div>
+  <div class="aurora-orb aurora-orb-3"></div>
+</div>
+<canvas id="confetti-canvas"></canvas>
 
 <p class="print-title">MathDoku</p>
 
@@ -325,10 +433,6 @@
 
 <div class="msg" id="msg"></div>
 
-<p class="legend">
-  √ sq.root · ∛ cube root · ∜ 4th root · xⁿ exponent · n! factorial · ÷ divide · × multiply<br>
-  <span style="color:#fcd34d">Tap a clue cell</span> to decode it — type what you think the expression equals.
-</p>
 
 <p style="font-size:0.72rem; color:#6b6b8a; margin-top:4px;">made with ♥ by Nael Qutub</p>
 
@@ -651,6 +755,13 @@
       hintFilled.delete(`${r},${c}`);
     }
     render();
+    // Pop animation on the entered cell
+    const inner = document.querySelectorAll('.cell')[r * 9 + c]?.querySelector('.cell-inner');
+    if (inner && inner.textContent) {
+      inner.classList.remove('pop');
+      void inner.offsetWidth;
+      inner.classList.add('pop');
+    }
   }
 
   function erase() {
@@ -686,6 +797,7 @@
 
     if (wrong.length === 0 && empty === 0) {
       showMsg('🎉 Solved! Well done!', 'success');
+      launchConfetti();
       return;
     }
 
@@ -712,6 +824,50 @@
     requestAnimationFrame(() => el.classList.add('show'));
     clearTimeout(el._t);
     el._t = setTimeout(() => el.classList.remove('show'), 3500);
+  }
+
+  // ── Confetti ─────────────────────────────────────────────────────────────
+  function launchConfetti() {
+    const canvas = document.getElementById('confetti-canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    canvas.style.display = 'block';
+    const COLORS = ['#6c63ff','#a855f7','#4ade80','#fbbf24','#f87171','#60a5fa','#f472b6','#34d399'];
+    const pieces = Array.from({length: 160}, () => ({
+      x:     Math.random() * canvas.width,
+      y:     -10 - Math.random() * 320,
+      w:     7  + Math.random() * 9,
+      h:     3  + Math.random() * 5,
+      color: COLORS[Math.floor(Math.random() * COLORS.length)],
+      rot:   Math.random() * Math.PI * 2,
+      rotV:  (Math.random() - 0.5) * 0.18,
+      vx:    (Math.random() - 0.5) * 2.5,
+      vy:    1.8 + Math.random() * 3.5,
+      alpha: 1,
+    }));
+    let raf;
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      let any = false;
+      for (const p of pieces) {
+        p.x += p.vx; p.y += p.vy; p.rot += p.rotV;
+        if (p.y > canvas.height * 0.72) p.alpha -= 0.018;
+        if (p.alpha <= 0 || p.y > canvas.height) continue;
+        any = true;
+        ctx.save();
+        ctx.globalAlpha = p.alpha;
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rot);
+        ctx.fillStyle = p.color;
+        ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+        ctx.restore();
+      }
+      if (any) { raf = requestAnimationFrame(draw); }
+      else { canvas.style.display = 'none'; }
+    }
+    cancelAnimationFrame(raf);
+    draw();
   }
 
   // ── New game ─────────────────────────────────────────────────────────────
@@ -805,6 +961,7 @@
 
   // ── Theme toggle ──────────────────────────────────────────────────────────
   function applyTheme(theme) {
+    document.body.classList.add('theme-transitioning');
     if (theme === 'light') {
       document.documentElement.setAttribute('data-theme', 'light');
       document.getElementById('themeBtn').textContent = '☀️';
@@ -813,6 +970,7 @@
       document.getElementById('themeBtn').textContent = '🌙';
     }
     localStorage.setItem('mathdoku-theme', theme);
+    setTimeout(() => document.body.classList.remove('theme-transitioning'), 420);
   }
 
   document.getElementById('themeBtn').addEventListener('click', () => {
