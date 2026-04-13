@@ -17,7 +17,7 @@
       --muted: #6b6b8a;
       --given-bg: #0f1f40;
       --given-text: #7eb8f7;
-      --user-text: #6ee79a;
+      --user-text: #60a5fa;
       --hint-text: #fbbf24;
       --annot-text: #fcd34d;
       --highlight: #151528;
@@ -46,7 +46,7 @@
       --muted: #7070a0;
       --given-bg: #dce8ff;
       --given-text: #2563eb;
-      --user-text: #16a34a;
+      --user-text: #2563eb;
       --hint-text: #d97706;
       --annot-text: #b45309;
       --highlight: #e8e8ff;
@@ -200,6 +200,8 @@
       color: var(--user-text);
     }
     .cell.hint-filled .cell-inner { color: var(--hint-text) !important; }
+    .cell.check-ok  .cell-inner   { color: #4ade80 !important; }
+    .cell.check-err .cell-inner   { color: #f87171 !important; }
     .cell.annotated   .cell-inner {
       font-size: clamp(16px, 5.5vw, 30px);
       font-weight: 800;
@@ -748,6 +750,8 @@
   let exprs       = [];   // pre-picked expression strings for given cells
   let hintFilled  = new Set();  // "r,c" for hint-auto-filled cells
   let flashErr    = new Set();  // "r,c" for flash-red cells
+  let checkOk     = new Set();  // "r,c" for correctly-decoded given cells
+  let checkErr    = new Set();  // "r,c" for incorrectly-decoded given cells
   let selected    = null; // [r, c] — either given or empty
   let hintCell    = null; // [r, c] currently highlighted as hint
   let hintLevel   = 0;    // 0=off 1=cell highlighted 2=answered
@@ -908,6 +912,8 @@
         if (hintCell && hintCell[0] === r && hintCell[1] === c) cell.classList.add('hint-cell');
         if (hintFilled.has(key)) cell.classList.add('hint-filled');
         if (flashErr.has(key))   cell.classList.add('flash-err');
+        if (checkOk.has(key))    cell.classList.add('check-ok');
+        if (checkErr.has(key))   cell.classList.add('check-err');
 
         const inner = document.createElement('div');
         inner.className = 'cell-inner';
@@ -947,7 +953,9 @@
     const [r, c] = selected;
 
     if (puzzle[r][c] !== 0) {
-      // Given cell — annotate
+      // Given cell — annotate; clear any prior check colouring
+      const key = `${r},${c}`;
+      checkOk.delete(key); checkErr.delete(key);
       annotations[r][c] = (annotations[r][c] === n) ? 0 : n;
     } else {
       // Empty cell — solve
@@ -972,6 +980,8 @@
     if (!selected) return;
     const [r, c] = selected;
     if (puzzle[r][c] !== 0) {
+      const key = `${r},${c}`;
+      checkOk.delete(key); checkErr.delete(key);
       annotations[r][c] = 0;
     } else {
       userGrid[r][c] = 0;
@@ -991,6 +1001,7 @@
           // Given cell: check annotation if present
           const ann = annotations[r][c];
           if (ann && ann !== puzzle[r][c]) wrong.push([r, c]);
+          else if (ann && ann === puzzle[r][c]) checkOk.add(`${r},${c}`);
         } else {
           // Empty cell: count for solved detection only, don't flag as wrong
           if (userGrid[r][c] === 0 || userGrid[r][c] !== solution[r][c]) empty++;
@@ -1009,7 +1020,7 @@
       wrong.forEach(([r, c]) => flashErr.add(`${r},${c}`));
       render();
       setTimeout(() => {
-        wrong.forEach(([r, c]) => flashErr.delete(`${r},${c}`));
+        wrong.forEach(([r, c]) => { flashErr.delete(`${r},${c}`); checkErr.add(`${r},${c}`); });
         render();
       }, 1000);
     }
@@ -1086,6 +1097,8 @@
     );
     hintFilled.clear();
     flashErr.clear();
+    checkOk.clear();
+    checkErr.clear();
     selected  = null;
     hintCell  = null;
     hintLevel = 0;
