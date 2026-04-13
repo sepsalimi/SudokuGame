@@ -81,49 +81,56 @@
     /* ── Top bar ── */
     .topbar {
       width: 100%;
-      max-width: 430px;
+      max-width: min(430px, calc(100dvh - 210px));
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 8px;
+      gap: clamp(4px, 1.5vw, 8px);
+      flex-wrap: nowrap;
     }
 
+    .title-block { flex: 1; min-width: 0; overflow: hidden; }
+
     .title-block h1 {
-      font-size: clamp(1.6rem, 7vw, 2.2rem);
+      font-size: clamp(1.1rem, 5.5vw, 2.2rem);
       font-weight: 900;
       background: linear-gradient(135deg, var(--accent), var(--accent2));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
       line-height: 1;
+      white-space: nowrap;
     }
     .title-block p {
-      font-size: 0.8rem;
+      font-size: clamp(0.6rem, 2.5vw, 0.8rem);
       color: var(--muted);
       margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
-    .top-btns { display: flex; gap: 6px; align-items: center; }
+    .top-btns { display: flex; gap: clamp(3px, 1vw, 6px); align-items: center; flex-shrink: 0; }
 
     .icon-btn {
-      padding: 7px 12px;
+      padding: clamp(5px, 1.5vw, 7px) clamp(6px, 2.2vw, 12px);
       background: var(--card);
       border: 1px solid var(--border);
       color: var(--text);
       border-radius: 8px;
-      font-size: 0.95rem;
+      font-size: clamp(0.72rem, 3vw, 0.95rem);
       cursor: pointer;
       white-space: nowrap;
       -webkit-tap-highlight-color: transparent;
     }
 
     .new-game-btn {
-      padding: 7px 14px;
+      padding: clamp(5px, 1.5vw, 7px) clamp(8px, 2.5vw, 14px);
       background: linear-gradient(135deg, var(--accent), var(--accent2));
       color: #fff;
       border: none;
       border-radius: 8px;
-      font-size: 0.97rem;
+      font-size: clamp(0.74rem, 3vw, 0.97rem);
       font-weight: 700;
       cursor: pointer;
       white-space: nowrap;
@@ -182,20 +189,20 @@
     .cell-inner {
       display: flex; align-items: center; justify-content: center;
       width: 100%; height: 100%;
-      font-size: clamp(7px, 2.5vw, 13px);
-      line-height: 1.15; text-align: center; padding: 2px;
+      font-size: clamp(8px, 3vw, 15px);
+      line-height: 1.2; text-align: center; padding: 2px;
       color: var(--given-text);
       pointer-events: none; word-break: break-all;
     }
     .cell.editable .cell-inner {
-      font-size: clamp(14px, 4.8vw, 28px);
-      font-weight: 700;
+      font-size: clamp(18px, 6.2vw, 34px);
+      font-weight: 800;
       color: var(--user-text);
     }
     .cell.hint-filled .cell-inner { color: var(--hint-text) !important; }
     .cell.annotated   .cell-inner {
-      font-size: clamp(14px, 4.8vw, 26px);
-      font-weight: 700;
+      font-size: clamp(16px, 5.5vw, 30px);
+      font-weight: 800;
       color: var(--annot-text);
     }
 
@@ -208,7 +215,7 @@
       aspect-ratio: 1;
       background: linear-gradient(135deg, var(--card) 0%, color-mix(in srgb, var(--card) 72%, var(--accent) 28%) 100%);
       border: 1px solid var(--border); color: var(--text);
-      border-radius: 8px; font-size: clamp(17px, 5.5vw, 27px); font-weight: 700;
+      border-radius: 8px; font-size: clamp(20px, 6.5vw, 32px); font-weight: 800;
       cursor: pointer; display: flex; align-items: center; justify-content: center;
       -webkit-tap-highlight-color: transparent;
       transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
@@ -390,9 +397,9 @@
       .cell.bb { border-bottom: 2.5px solid black !important; }
       .cell.given    { background: #efefef !important; }
       .cell.editable { background: white !important; }
-      .cell-inner { color: black !important; font-size: clamp(7px, 2.5vw, 13px) !important; }
-      .cell.editable .cell-inner { font-size: clamp(14px, 4.8vw, 28px) !important; font-weight: 700 !important; }
-      .cell.annotated .cell-inner { font-size: clamp(14px, 4.8vw, 26px) !important; font-weight: 700 !important; }
+      .cell-inner { color: black !important; font-size: clamp(8px, 3vw, 15px) !important; }
+      .cell.editable .cell-inner { font-size: clamp(18px, 6.2vw, 34px) !important; font-weight: 800 !important; }
+      .cell.annotated .cell-inner { font-size: clamp(16px, 5.5vw, 30px) !important; font-weight: 800 !important; }
     }
   </style>
 </head>
@@ -457,6 +464,13 @@
         <span class="pill"     data-type="division">÷ Division</span>
         <span class="pill"     data-type="multiplication">× Multiply</span>
         <span class="pill on"  data-type="standard">123 Standard</span>
+        <span class="pill"     data-type="logarithms">log Logs</span>
+        <span class="pill"     data-type="trigonometry">sin/cos Trig</span>
+        <span class="pill"     data-type="reciprocalTrig">sec/csc Recip.</span>
+        <span class="pill"     data-type="hyperbolicTrig">sinh Hyper.</span>
+        <span class="pill"     data-type="geometricSeries">Σ Geo. Series</span>
+        <span class="pill"     data-type="radians">π Radians</span>
+        <span class="pill"     data-type="algebra">x Algebra</span>
       </div>
     </div>
     <div class="modal-actions">
@@ -523,6 +537,94 @@
     },
     standard: {
       1:['1'],2:['2'],3:['3'],4:['4'],5:['5'],6:['6'],7:['7'],8:['8'],9:['9'],
+    },
+    logarithms: {
+      1: ['log₂2', 'log₃3', 'log₅5', 'ln(e)'],
+      2: ['log₂4', 'log₃9', 'log₅25', 'log100'],
+      3: ['log₂8', 'log₃27', 'log1000'],
+      4: ['log₂16', 'log₃81'],
+      5: ['log₂32'],
+      6: ['log₂64'],
+      7: ['log₂128'],
+      8: ['log₂256'],
+      9: ['log₂512'],
+    },
+    trigonometry: {
+      1: ['sin90°', 'cos0°', 'tan45°'],
+      2: ['2sin90°', '2cos0°', '4sin30°', '4cos60°'],
+      3: ['3cos0°', '6sin30°', '6cos60°', '3tan45°'],
+      4: ['4sin90°', '8sin30°', '8cos60°', '4cos0°'],
+      5: ['5cos0°', '10sin30°', '5tan45°'],
+      6: ['6sin90°', '12sin30°', '6cos0°'],
+      7: ['7cos0°', '7sin90°', '7tan45°'],
+      8: ['8sin90°', '16sin30°', '16cos60°'],
+      9: ['9cos0°', '18sin30°', '9tan45°'],
+    },
+    reciprocalTrig: {
+      1: ['sec0°', 'csc90°', 'cot45°'],
+      2: ['sec60°', 'csc30°', '2cot45°'],
+      3: ['3sec0°', '3csc90°', '3cot45°'],
+      4: ['2sec60°', '2csc30°', '4cot45°'],
+      5: ['5csc90°', '5sec0°', '5cot45°'],
+      6: ['3sec60°', '3csc30°', '6cot45°'],
+      7: ['7sec0°', '7csc90°', '7cot45°'],
+      8: ['4sec60°', '4csc30°', '8cot45°'],
+      9: ['9csc90°', '9sec0°', '9cot45°'],
+    },
+    hyperbolicTrig: {
+      1: ['cosh0', 'sech0'],
+      2: ['2cosh0', '2sech0'],
+      3: ['3cosh0', '3sech0'],
+      4: ['4cosh0', '4sech0'],
+      5: ['5cosh0', '5sech0'],
+      6: ['6cosh0', '6sech0'],
+      7: ['7cosh0', '7sech0'],
+      8: ['8cosh0', '8sech0'],
+      9: ['9cosh0', '9sech0'],
+    },
+    geometricSeries: {
+      2: ['Σ(½)ⁱ'],
+      3: ['Σ(⅔)ⁱ', '2⁰+2¹'],
+      4: ['Σ(¾)ⁱ', '3⁰+3¹'],
+      5: ['Σ(⅘)ⁱ', '4⁰+4¹'],
+      6: ['Σ(⅚)ⁱ', '2¹+2²'],
+      7: ['Σ(6/7)ⁱ', '2⁰+2¹+2²'],
+      8: ['Σ(⅞)ⁱ', '7⁰+7¹'],
+      9: ['Σ(8/9)ⁱ', '8⁰+8¹'],
+    },
+    // Radian variants — used automatically when 'radians' toggle is on
+    trigonometryRad: {
+      1: ['sin(π/2)', 'cos(0)', 'tan(π/4)'],
+      2: ['2sin(π/2)', '2cos(0)', '4sin(π/6)', '4cos(π/3)'],
+      3: ['3cos(0)', '6sin(π/6)', '6cos(π/3)', '3tan(π/4)'],
+      4: ['4sin(π/2)', '8sin(π/6)', '8cos(π/3)', '4cos(0)'],
+      5: ['5cos(0)', '10sin(π/6)', '5tan(π/4)'],
+      6: ['6sin(π/2)', '12sin(π/6)', '6cos(0)'],
+      7: ['7cos(0)', '7sin(π/2)', '7tan(π/4)'],
+      8: ['8sin(π/2)', '16sin(π/6)', '16cos(π/3)'],
+      9: ['9cos(0)', '18sin(π/6)', '9tan(π/4)'],
+    },
+    reciprocalTrigRad: {
+      1: ['sec(0)', 'csc(π/2)', 'cot(π/4)'],
+      2: ['sec(π/3)', 'csc(π/6)', '2cot(π/4)'],
+      3: ['3sec(0)', '3csc(π/2)', '3cot(π/4)'],
+      4: ['2sec(π/3)', '2csc(π/6)', '4cot(π/4)'],
+      5: ['5csc(π/2)', '5sec(0)', '5cot(π/4)'],
+      6: ['3sec(π/3)', '3csc(π/6)', '6cot(π/4)'],
+      7: ['7sec(0)', '7csc(π/2)', '7cot(π/4)'],
+      8: ['4sec(π/3)', '4csc(π/6)', '8cot(π/4)'],
+      9: ['9csc(π/2)', '9sec(0)', '9cot(π/4)'],
+    },
+    algebra: {
+      1: ['2x+1=3', 'x+4=5', '3x-2=1', '7x=7'],
+      2: ['3x-1=5', '2x+2=6', 'x+7=9', '5x-8=2'],
+      3: ['2x+1=7', '4x-9=3', 'x+5=8', '6x-15=3'],
+      4: ['3x-2=10', '2x+1=9', 'x+4=8', '5x-16=4'],
+      5: ['2x-1=9', '3x-10=5', 'x+2=7', '4x-15=5'],
+      6: ['3x-12=6', '2x-6=6', 'x+2=8', '4x-18=6'],
+      7: ['2x-7=7', '3x-14=7', 'x+1=8', '5x-28=7'],
+      8: ['3x-16=8', '2x-8=8', 'x+1=9', '5x-32=8'],
+      9: ['2x-9=9', '3x-18=9', '4x-27=9', '5x-36=9'],
     },
   };
 
@@ -609,8 +711,14 @@
   // ── Expression picking ──────────────────────────────────────────────────
   function pickExpr(val) {
     const c = [];
-    for (const t of enabledTypes)
-      if (POOL[t]?.[val]) c.push(...POOL[t][val]);
+    const useRad = enabledTypes.has('radians');
+    for (const t of enabledTypes) {
+      if (t === 'radians') continue; // modifier flag, not a pool
+      let poolKey = t;
+      if (useRad && t === 'trigonometry')   poolKey = 'trigonometryRad';
+      if (useRad && t === 'reciprocalTrig') poolKey = 'reciprocalTrigRad';
+      if (POOL[poolKey]?.[val]) c.push(...POOL[poolKey][val]);
+    }
     for (const [key, map] of Object.entries(COMPOUND)) {
       const req = key.split(',');
       if (req.every(t => enabledTypes.has(t)) && map[val]) c.push(...map[val]);
