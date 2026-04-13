@@ -455,7 +455,7 @@
 <div class="msg" id="msg"></div>
 
 
-<p style="font-size:0.72rem; color:#6b6b8a; margin-top:4px;">made with ♥ by Nael Qutub & Sepehr Salimi</p>
+<p style="font-size:0.72rem; color:#6b6b8a; margin-top:4px;">Made with ♥ by Nael Qutub & Sepehr Salimi</p>
 
 <!-- New Game Modal -->
 <div class="modal-overlay" id="modalOverlay">
@@ -472,21 +472,21 @@
     <div class="modal-row">
       <span class="modal-label">Expression types (mix and match)</span>
       <div class="pill-group" id="typeGroup">
-        <span class="pill on"  data-type="roots">√ Roots</span>
-        <span class="pill on"  data-type="powers">xⁿ Powers</span>
-        <span class="pill"     data-type="factorials">n! Factorials</span>
-        <span class="pill"     data-type="division">÷ Division</span>
-        <span class="pill"     data-type="multiplication">× Multiply</span>
-        <span class="pill on"  data-type="standard">123 Standard</span>
+        <span class="pill pill-green on" data-type="roots">√ Roots</span>
+        <span class="pill pill-green on" data-type="powers">xⁿ Powers</span>
+        <span class="pill pill-green"    data-type="factorials">n! Factorials</span>
+        <span class="pill pill-green"    data-type="division">÷ Division</span>
+        <span class="pill pill-green"    data-type="multiplication">× Multiply</span>
+        <span class="pill pill-green on" data-type="standard">123 Standard</span>
         <button class="show-more-btn" id="showMoreBtn">Show more ▾</button>
         <div class="advanced-pills hidden" id="advancedPills">
-          <span class="pill"     data-type="logarithms">Logs</span>
-          <span class="pill"     data-type="trigonometry">sin/cos Trig</span>
-          <span class="pill"     data-type="reciprocalTrig">sec/csc Recip.</span>
-          <span class="pill"     data-type="hyperbolicTrig">sinh/cosh/tanh</span>
-          <span class="pill"     data-type="geometricSeries">Σ Geo. Series</span>
-          <span class="pill"     data-type="radians">π Radians</span>
-          <span class="pill"     data-type="algebra">x Algebra</span>
+          <span class="pill pill-orange"  data-type="logarithms">Logs</span>
+          <span class="pill pill-orange"  data-type="trigonometry">sin/cos Trig</span>
+          <span class="pill pill-orange"  data-type="algebra">x Algebra</span>
+          <span class="pill pill-red"     data-type="reciprocalTrig">sec/csc Recip.</span>
+          <span class="pill pill-red"     data-type="hyperbolicTrig">sinh/cosh/tanh</span>
+          <span class="pill pill-red"     data-type="geometricSeries">Σ Geo. Series</span>
+          <span class="pill pill-red"     data-type="radians">π Radians</span>
         </div>
       </div>
     </div>
@@ -992,9 +992,8 @@
           const ann = annotations[r][c];
           if (ann && ann !== puzzle[r][c]) wrong.push([r, c]);
         } else {
-          // Empty cell
-          if (userGrid[r][c] === 0) empty++;
-          else if (userGrid[r][c] !== solution[r][c]) wrong.push([r, c]);
+          // Empty cell: count for solved detection only, don't flag as wrong
+          if (userGrid[r][c] === 0 || userGrid[r][c] !== solution[r][c]) empty++;
         }
       }
     }
