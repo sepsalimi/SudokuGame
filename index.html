@@ -953,6 +953,8 @@
     const [r, c] = selected;
 
     if (puzzle[r][c] !== 0) {
+      // Plain number cell (e.g. "3") — nothing to decode, block annotation
+      if (/^\d$/.test(exprs[r][c])) return;
       // Given cell — annotate; clear any prior check colouring
       const key = `${r},${c}`;
       checkOk.delete(key); checkErr.delete(key);
@@ -980,6 +982,7 @@
     if (!selected) return;
     const [r, c] = selected;
     if (puzzle[r][c] !== 0) {
+      if (/^\d$/.test(exprs[r][c])) return;
       const key = `${r},${c}`;
       checkOk.delete(key); checkErr.delete(key);
       annotations[r][c] = 0;
