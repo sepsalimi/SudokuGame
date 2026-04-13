@@ -201,7 +201,10 @@
     }
     .cell.hint-filled .cell-inner { color: var(--hint-text) !important; }
     .cell.check-ok  .cell-inner   { color: #4ade80 !important; }
+    .cell.check-err                { background: var(--err-bg) !important; }
     .cell.check-err .cell-inner   { color: #f87171 !important; }
+    html[data-theme="light"] .cell.check-ok  .cell-inner { color: #16a34a !important; }
+    html[data-theme="light"] .cell.check-err .cell-inner { color: #dc2626 !important; }
     .cell.annotated   .cell-inner {
       font-size: clamp(16px, 5.5vw, 30px);
       font-weight: 800;
