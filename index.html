@@ -284,6 +284,20 @@
       -webkit-tap-highlight-color: transparent;
     }
     .pill.on { background: var(--pill-on-bg); border-color: var(--accent); color: var(--text); }
+    .pill.pill-green.on  { background: rgba(74,222,128,0.15); border-color: #4ade80; color: #4ade80; }
+    .pill.pill-orange.on { background: rgba(251,191,36,0.15); border-color: #fbbf24; color: #fbbf24; }
+    .pill.pill-red.on    { background: rgba(248,113,113,0.15); border-color: #f87171; color: #f87171; }
+
+    .show-more-btn {
+      padding: 5px 12px; background: transparent;
+      border: 1px dashed var(--muted); color: var(--muted);
+      border-radius: 100px; cursor: pointer; font-size: 0.75rem;
+      user-select: none; transition: color 0.15s, border-color 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .show-more-btn:hover { color: var(--text); border-color: var(--accent); }
+    .advanced-pills { display: flex; flex-wrap: wrap; gap: 6px; width: 100%; }
+    .advanced-pills.hidden { display: none; }
 
     .modal-actions { display: flex; gap: 8px; }
     .start-btn {
@@ -448,11 +462,11 @@
   <div class="modal">
     <h2>New Game</h2>
     <div class="modal-row">
-      <span class="modal-label">Difficulty</span>
+      <span class="modal-label">Grid Difficulty</span>
       <div class="pill-group" id="diffGroup">
-        <span class="pill on" data-diff="easy">Easy</span>
-        <span class="pill" data-diff="medium">Medium</span>
-        <span class="pill" data-diff="hard">Hard</span>
+        <span class="pill pill-green on" data-diff="easy">Easy</span>
+        <span class="pill pill-orange" data-diff="medium">Medium</span>
+        <span class="pill pill-red" data-diff="hard">Hard</span>
       </div>
     </div>
     <div class="modal-row">
@@ -464,13 +478,16 @@
         <span class="pill"     data-type="division">÷ Division</span>
         <span class="pill"     data-type="multiplication">× Multiply</span>
         <span class="pill on"  data-type="standard">123 Standard</span>
-        <span class="pill"     data-type="logarithms">log Logs</span>
-        <span class="pill"     data-type="trigonometry">sin/cos Trig</span>
-        <span class="pill"     data-type="reciprocalTrig">sec/csc Recip.</span>
-        <span class="pill"     data-type="hyperbolicTrig">sinh Hyper.</span>
-        <span class="pill"     data-type="geometricSeries">Σ Geo. Series</span>
-        <span class="pill"     data-type="radians">π Radians</span>
-        <span class="pill"     data-type="algebra">x Algebra</span>
+        <button class="show-more-btn" id="showMoreBtn">Show more ▾</button>
+        <div class="advanced-pills hidden" id="advancedPills">
+          <span class="pill"     data-type="logarithms">Logs</span>
+          <span class="pill"     data-type="trigonometry">sin/cos Trig</span>
+          <span class="pill"     data-type="reciprocalTrig">sec/csc Recip.</span>
+          <span class="pill"     data-type="hyperbolicTrig">sinh/cosh/tanh</span>
+          <span class="pill"     data-type="geometricSeries">Σ Geo. Series</span>
+          <span class="pill"     data-type="radians">π Radians</span>
+          <span class="pill"     data-type="algebra">x Algebra</span>
+        </div>
       </div>
     </div>
     <div class="modal-actions">
@@ -572,15 +589,15 @@
       9: ['9csc90°', '9sec0°', '9cot45°'],
     },
     hyperbolicTrig: {
-      1: ['cosh0', 'sech0'],
-      2: ['2cosh0', '2sech0'],
-      3: ['3cosh0', '3sech0'],
-      4: ['4cosh0', '4sech0'],
-      5: ['5cosh0', '5sech0'],
-      6: ['6cosh0', '6sech0'],
-      7: ['7cosh0', '7sech0'],
-      8: ['8cosh0', '8sech0'],
-      9: ['9cosh0', '9sech0'],
+      1: ['cosh(0)', 'sech(0)', 'tanh(∞)', 'sinh(arcsinh(1))'],
+      2: ['2cosh(0)', '2sech(0)', '2tanh(∞)', 'sinh(arcsinh(2))'],
+      3: ['3cosh(0)', '3sech(0)', '3tanh(∞)', 'sinh(arcsinh(3))'],
+      4: ['4cosh(0)', '4sech(0)', '4tanh(∞)', 'sinh(arcsinh(4))'],
+      5: ['5cosh(0)', '5sech(0)', '5tanh(∞)', 'sinh(arcsinh(5))'],
+      6: ['6cosh(0)', '6sech(0)', '6tanh(∞)', 'sinh(arcsinh(6))'],
+      7: ['7cosh(0)', '7sech(0)', '7tanh(∞)', 'sinh(arcsinh(7))'],
+      8: ['8cosh(0)', '8sech(0)', '8tanh(∞)', 'sinh(arcsinh(8))'],
+      9: ['9cosh(0)', '9sech(0)', '9tanh(∞)', 'sinh(arcsinh(9))'],
     },
     geometricSeries: {
       2: ['Σ(½)ⁱ'],
@@ -643,6 +660,83 @@
       3: ['3!÷2!'],
       4: ['4!÷(3!)'],
       8: ['(4!)÷3'],
+    },
+    'algebra,roots': {
+      1: ['x+√9=4', '√x=1'],
+      2: ['x²=4', 'x+√4=4'],
+      3: ['x²=9', 'x+√9=6'],
+      4: ['√x=2', 'x+√4=6'],
+      5: ['x+√4=7'],
+      6: ['x+√9=9'],
+      7: ['x²=49', 'x+√4=9'],
+      8: ['∛x=2', 'x-√4=6'],
+      9: ['√x=3', 'x²=81'],
+    },
+    'algebra,powers': {
+      1: ['x^100=1'],
+      2: ['x³=8', '2^x=4'],
+      3: ['3^x=27'],
+      4: ['2^x=16', 'x²-x=12'],
+      5: ['x²-x=20'],
+      6: ['x²-x=30'],
+      7: ['x²=49', 'x²-x=42'],
+      8: ['x²-x=56'],
+      9: ['x²=81', 'x²-x=72'],
+    },
+    'algebra,factorials': {
+      1: ['x!=1'],
+      2: ['x!=2'],
+      3: ['x!=6'],
+      4: ['x!÷6=4'],
+      5: ['x!÷24=5'],
+      6: ['x!÷(x-1)!=6'],
+      7: ['x!÷(x-1)!=7'],
+      8: ['x!÷(x-1)!=8'],
+      9: ['x!÷(x-1)!=9'],
+    },
+    'algebra,division': {
+      1: ['9÷x=9', '7÷x=7'],
+      2: ['8÷x=4', '6÷x=3'],
+      3: ['9÷x=3', '12÷x=4'],
+      4: ['8÷x=2', '16÷x=4'],
+      5: ['45÷x=9', '35÷x=7'],
+      6: ['18÷x=3', '24÷x=4'],
+      7: ['49÷x=7', '63÷x=9'],
+      8: ['16÷x=2', '24÷x=3'],
+      9: ['27÷x=3', '36÷x=4'],
+    },
+    'algebra,multiplication': {
+      1: ['x×9=9', 'x×7=7'],
+      2: ['x×4=8', 'x×3=6'],
+      3: ['x×3=9', 'x×2=6'],
+      4: ['x×2=8', 'x×4=16'],
+      5: ['x×9=45', 'x×7=35'],
+      6: ['x×3=18', 'x×4=24'],
+      7: ['x×7=49', 'x×9=63'],
+      8: ['x×3=24', 'x×2=16'],
+      9: ['x×9=81', 'x×3=27'],
+    },
+    'algebra,trigonometry': {
+      1: ['arctan(tan(1°))=x°'],
+      2: ['arccos(0°)=x·45°'],
+      3: ['arcsin(½)=x·10°'],
+      4: ['arccos(½)=x·15°'],
+      5: ['arctan(1)=x·9°'],
+      6: ['arcsin(1)=x·15°'],
+      7: ['arctan(tan(7°))=x°'],
+      8: ['arccos(cos(8°))=x°'],
+      9: ['arccos(0°)=x·10°'],
+    },
+    'algebra,trigonometry,radians': {
+      1: ['x·arctan(1)=π/4'],
+      2: ['x·arctan(1)=π/2'],
+      3: ['x·arctan(1)=3π/4'],
+      4: ['x·arctan(1)=π'],
+      5: ['x·arctan(1)=5π/4'],
+      6: ['x·arctan(1)=3π/2'],
+      7: ['x·arctan(1)=7π/4'],
+      8: ['x·arctan(1)=2π'],
+      9: ['x·arcsin(1)=9π/2'],
     },
   };
 
@@ -721,6 +815,8 @@
     }
     for (const [key, map] of Object.entries(COMPOUND)) {
       const req = key.split(',');
+      // When radians is on, skip degree algebra+trig (use the radian variant key instead)
+      if (useRad && req.includes('algebra') && req.includes('trigonometry') && !req.includes('radians')) continue;
       if (req.every(t => enabledTypes.has(t)) && map[val]) c.push(...map[val]);
     }
     if (!c.length) return String(val);
@@ -1041,6 +1137,14 @@
       p.classList.add('on');
       difficulty = p.dataset.diff;
     });
+  });
+
+  // Show more / less advanced expression types
+  document.getElementById('showMoreBtn').addEventListener('click', () => {
+    const adv = document.getElementById('advancedPills');
+    const btn = document.getElementById('showMoreBtn');
+    const nowHidden = adv.classList.toggle('hidden');
+    btn.textContent = nowHidden ? 'Show more ▾' : 'Show less ▴';
   });
 
   // Expression type pills
