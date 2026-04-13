@@ -75,7 +75,7 @@
       flex-direction: column;
       align-items: center;
       padding: 12px 8px 16px;
-      gap: 0;
+      gap: 20px;
     }
 
     /* ── Top bar ── */
@@ -85,7 +85,7 @@
       flex: 1;
       display: flex;
       flex-direction: column;
-      justify-content: center;
+      justify-content: flex-end;
       gap: 10px;
     }
 
@@ -167,7 +167,7 @@
       flex: 1;
       display: flex;
       flex-direction: column;
-      justify-content: center;
+      justify-content: flex-start;
       gap: 12px;
       min-height: 0;
     }
@@ -256,7 +256,7 @@
     /* ── Numpad ── */
     .numpad {
       display: grid; grid-template-columns: repeat(9, 1fr);
-      gap: 8px; width: 100%;
+      gap: 8px; width: 100%; min-width: 0;
     }
     .num-btn {
       aspect-ratio: 1;
