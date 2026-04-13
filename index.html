@@ -83,16 +83,26 @@
       width: 100%;
       max-width: min(430px, calc(100dvh - 210px));
       display: flex;
-      align-items: center;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .topbar-row1 {
+      display: flex;
+      align-items: flex-start;
       justify-content: space-between;
-      gap: clamp(4px, 1.5vw, 8px);
-      flex-wrap: nowrap;
+      gap: 8px;
+    }
+
+    .topbar-row2 {
+      display: flex;
+      gap: 8px;
     }
 
     .title-block { flex: 1; min-width: 0; overflow: hidden; }
 
     .title-block h1 {
-      font-size: clamp(1.1rem, 5.5vw, 2.2rem);
+      font-size: clamp(1.4rem, 7vw, 2.6rem);
       font-weight: 900;
       background: linear-gradient(135deg, var(--accent), var(--accent2));
       -webkit-background-clip: text;
@@ -102,50 +112,78 @@
       white-space: nowrap;
     }
     .title-block p {
-      font-size: clamp(0.6rem, 2.5vw, 0.8rem);
+      font-size: clamp(0.65rem, 2.8vw, 0.85rem);
       color: var(--muted);
-      margin-top: 2px;
+      margin-top: 3px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
 
-    .top-btns { display: flex; gap: clamp(3px, 1vw, 6px); align-items: center; flex-shrink: 0; }
+    .top-icons { display: flex; gap: 6px; align-items: stretch; flex: 1; justify-content: flex-end; }
+    .top-icons .icon-btn { flex: 1; text-align: center; }
+    @media (max-width: 360px) { .btn-label { display: none; } }
 
     .icon-btn {
-      padding: clamp(5px, 1.5vw, 7px) clamp(6px, 2.2vw, 12px);
+      padding: 9px 14px;
       background: var(--card);
       border: 1px solid var(--border);
       color: var(--text);
-      border-radius: 8px;
-      font-size: clamp(0.72rem, 3vw, 0.95rem);
+      border-radius: 10px;
+      font-size: 0.9rem;
       cursor: pointer;
       white-space: nowrap;
       -webkit-tap-highlight-color: transparent;
     }
 
     .new-game-btn {
-      padding: clamp(5px, 1.5vw, 7px) clamp(8px, 2.5vw, 14px);
+      flex: 1;
+      padding: 11px 14px;
       background: linear-gradient(135deg, var(--accent), var(--accent2));
       color: #fff;
       border: none;
-      border-radius: 8px;
-      font-size: clamp(0.74rem, 3vw, 0.97rem);
+      border-radius: 10px;
+      font-size: 0.95rem;
       font-weight: 700;
       cursor: pointer;
       white-space: nowrap;
       -webkit-tap-highlight-color: transparent;
     }
 
+    .hint-btn {
+      flex: 1;
+      padding: 11px 14px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 10px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      white-space: nowrap;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* ── Game area (grid + numpad + actions share one container so widths are guaranteed identical) ── */
+    .game-area {
+      width: 100%;
+      max-width: min(430px, calc(100dvh - 210px));
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex: 1;
+      min-height: 0;
+    }
+
     /* ── Grid ── */
-    .grid-wrap { width: 100%; max-width: min(430px, calc(100dvh - 210px)); }
+    .grid-wrap { width: 100%; }
 
     .grid {
       width: 100%;
-      aspect-ratio: 1;
+      aspect-ratio: 19 / 20;
       display: grid;
       grid-template-columns: repeat(9, 1fr);
       grid-template-rows: repeat(9, 1fr);
+      background: var(--surface);
       border: 2.5px solid var(--box-line);
       border-radius: 16px;
       overflow: hidden;
@@ -223,7 +261,7 @@
     /* ── Numpad ── */
     .numpad {
       display: grid; grid-template-columns: repeat(9, 1fr);
-      gap: 5px; width: 100%; max-width: min(430px, calc(100dvh - 210px));
+      gap: 5px; width: 100%;
     }
     .num-btn {
       aspect-ratio: 1;
@@ -418,6 +456,7 @@
       body { background: white !important; color: black !important; padding: 4mm; gap: 4mm; }
       .topbar, .numpad, .bottom-actions, .msg, .legend, .modal-overlay { display: none !important; }
       .print-title { display: block; text-align: center; font-size: 18pt; font-weight: 900; margin-bottom: 4mm; color: black !important; }
+      .game-area { max-width: 100%; }
       .grid-wrap { max-width: 100%; }
       .grid { width: min(90vw, 140mm) !important; border: 3px solid black !important; border-radius: 0 !important; }
       .cell { border-color: #aaa !important; }
@@ -443,30 +482,36 @@
 <p class="print-title">MathDoku</p>
 
 <div class="topbar">
-  <div class="title-block">
-    <h1>MathDoku</h1>
-    <p>Sudoku with math expressions</p>
+  <div class="topbar-row1">
+    <div class="title-block">
+      <h1>MathDoku</h1>
+      <p>Sudoku with math expressions</p>
+    </div>
+    <div class="top-icons">
+      <button class="icon-btn" id="themeBtn">☀️ <span class="btn-label">Light</span></button>
+      <button class="icon-btn" id="printBtn">🖨 <span class="btn-label">Print</span></button>
+    </div>
   </div>
-  <div class="top-btns">
-    <button class="icon-btn" id="themeBtn" title="Toggle light/dark mode">🌙</button>
-    <button class="icon-btn" id="hintBtn">💡 Hint</button>
-    <button class="icon-btn" id="printBtn">🖨</button>
+  <div class="topbar-row2">
+    <button class="hint-btn" id="hintBtn">💡 Hint</button>
     <button class="new-game-btn" id="newGameBtn">▶ New Game</button>
   </div>
 </div>
 
-<div class="grid-wrap">
-  <div class="grid" id="grid"></div>
+<div class="game-area">
+  <div class="grid-wrap">
+    <div class="grid" id="grid"></div>
+  </div>
+
+  <div class="numpad" id="numpad"></div>
+
+  <div class="bottom-actions">
+    <button class="act-btn erase-btn" id="eraseBtn">⌫ Erase</button>
+    <button class="act-btn check-btn" id="checkBtn">✓ Check</button>
+  </div>
+
+  <div class="msg" id="msg"></div>
 </div>
-
-<div class="numpad" id="numpad"></div>
-
-<div class="bottom-actions">
-  <button class="act-btn erase-btn" id="eraseBtn">⌫ Erase</button>
-  <button class="act-btn check-btn" id="checkBtn">✓ Check</button>
-</div>
-
-<div class="msg" id="msg"></div>
 
 
 <p style="font-size:0.72rem; color:#6b6b8a; margin-top:4px;">Made with ♥ by Nael Qutub & Sepehr Salimi</p>
@@ -1204,10 +1249,10 @@
     document.body.classList.add('theme-transitioning');
     if (theme === 'light') {
       document.documentElement.setAttribute('data-theme', 'light');
-      document.getElementById('themeBtn').textContent = '☀️';
+      document.getElementById('themeBtn').innerHTML = '🌙 <span class="btn-label">Dark</span>';
     } else {
       document.documentElement.removeAttribute('data-theme');
-      document.getElementById('themeBtn').textContent = '🌙';
+      document.getElementById('themeBtn').innerHTML = '☀️ <span class="btn-label">Light</span>';
     }
     localStorage.setItem('mathdoku-theme', theme);
     setTimeout(() => document.body.classList.remove('theme-transitioning'), 420);
